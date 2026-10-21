@@ -1,0 +1,2 @@
+class JetraError(Exception):
+    pass
