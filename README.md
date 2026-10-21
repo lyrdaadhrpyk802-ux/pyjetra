@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/lyrdaadhrpyk802-ux/pyjetra/main/logo.png" width="250" alt="PyJetra Logo">
+</p>
+
+# PyJetra Library
 # PyJetra Library
 ### [EN] A Modern Python Wrapper for Jetra Bot API
 ### [FA] یک کتابخانه مدرن پایتون برای API ربات جترا
