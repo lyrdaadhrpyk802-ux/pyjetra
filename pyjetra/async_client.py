@@ -18,6 +18,10 @@ class AsyncJetraBot:
                 if not data.get("ok"): raise JetraError(f"API Error: {data.get('description')}")
                 return data.get("result")
 
+    async def get_me(self) -> User:
+        res = await self._request("getMe")
+        return User(**{k: res.get(k) for k in ["id", "is_bot", "first_name", "last_name", "username"]})
+
     async def send_message(self, chat_id: int, text: str, reply_to_message_id: Optional[int] = None, reply_markup: Optional[InlineKeyboardMarkup] = None) -> dict:
         params = {"chat_id": chat_id, "text": text}
         if reply_to_message_id: params["reply_to_message_id"] = reply_to_message_id
@@ -25,7 +29,8 @@ class AsyncJetraBot:
         return await self._request("sendMessage", **params)
 
     async def answer_callback_query(self, callback_query_id: str, text: Optional[str] = None, show_alert: bool = False) -> dict:
-        return await self._request("answerCallbackQuery", callback_query_id=callback_query_id, text=text, show_alert=show_alert)
+        params = {"callback_query_id": callback_query_id, "text": text, "show_alert": show_alert}
+        return await self._request("answerCallbackQuery", **params)
 
     async def get_updates(self, offset: int = 0) -> List[dict]:
         return await self._request("getUpdates", offset=offset, timeout=30)
@@ -36,27 +41,32 @@ class AsyncJetraBot:
             return f
         return decorator(func) if func else decorator
 
-    def on_callback_query(self, func: Callable):
-        self._callback_handlers.append(func)
-        return func
+    def on_callback_query(self, func: Callable = None):
+        def decorator(f):
+            self._callback_handlers.append(f)
+            return f
+        return decorator(func) if func else decorator
+
+    async def process_update(self, update: dict):
+        if "message" in update:
+            msg = Message(update["message"], self)
+            for handler in self._message_handlers:
+                if all(f(msg) for f in handler["filters"]):
+                    await handler["func"](msg)
+        elif "callback_query" in update:
+            cb = CallbackQuery(update["callback_query"], self)
+            for handler in self._callback_handlers:
+                await handler(cb)
 
     async def start_polling(self):
-        print("Async Bot polling...")
+        print("Bot is polling (Async)...")
         offset = 0
         while True:
             try:
                 updates = await self.get_updates(offset)
                 for update in updates:
                     offset = update["update_id"] + 1
-                    if "message" in update:
-                        msg = Message(update["message"], self)
-                        for handler in self._message_handlers:
-                            if all(f(msg) for f in handler["filters"]):
-                                await handler["func"](msg)
-                    elif "callback_query" in update:
-                        cb = CallbackQuery(update["callback_query"], self)
-                        for handler in self._callback_handlers:
-                            await handler(cb)
+                    await self.process_update(update)
             except Exception as e:
                 print(f"[Polling Error] {e}")
                 await asyncio.sleep(2)

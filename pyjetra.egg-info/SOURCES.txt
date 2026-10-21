@@ -4,6 +4,7 @@ README.md
 pyproject.toml
 pyjetra/__init__.py
 pyjetra/async_client.py
+pyjetra/banner.py
 pyjetra/client.py
 pyjetra/dev_info.py
 pyjetra/exceptions.py
