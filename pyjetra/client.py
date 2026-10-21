@@ -14,8 +14,11 @@ class JetraBot:
         self._callback_handlers = []
         self._states = {}
 
+    # [FA] تنظیم وضعیت کاربر
     def set_state(self, user_id, state): self._states[user_id] = state
+    # [FA] دریافت وضعیت کاربر
     def get_state(self, user_id): return self._states.get(user_id)
+    # [FA] پاک کردن وضعیت کاربر
     def clear_state(self, user_id):
         if user_id in self._states: del self._states[user_id]
 
@@ -36,21 +39,25 @@ class JetraBot:
         except requests.exceptions.ReadTimeout: return []
         except Exception as e: raise JetraError(f"Network Error: {e}")
 
+    # [FA] دریافت اطلاعات ربات
     def get_me(self) -> User:
         res = self._request("getMe")
         return User(**{k: res.get(k) for k in ["id", "is_bot", "first_name", "last_name", "username"]})
 
+    # [FA] ارسال پیام متنی
     def send_message(self, chat_id: int, text: str, reply_to_message_id: Optional[int] = None, reply_markup: Optional[InlineKeyboardMarkup] = None) -> dict:
         params = {"chat_id": chat_id, "text": text}
         if reply_to_message_id: params["reply_to_message_id"] = reply_to_message_id
         if reply_markup: params["reply_markup"] = reply_markup.to_dict()
         return self._request("sendMessage", **params)
 
+    # [FA] ویرایش متن یک پیام ارسال شده
     def edit_message_text(self, chat_id: int, message_id: int, text: str, reply_markup: Optional[InlineKeyboardMarkup] = None) -> dict:
         params = {"chat_id": chat_id, "message_id": message_id, "text": text}
         if reply_markup: params["reply_markup"] = reply_markup.to_dict()
         return self._request("editMessageText", **params)
         
+    # [FA] حذف یک پیام
     def delete_message(self, chat_id: int, message_id: int) -> dict:
         return self._request("deleteMessage", chat_id=chat_id, message_id=message_id)
 
@@ -64,18 +71,22 @@ class JetraBot:
         except FileNotFoundError:
             raise JetraError(f"File not found: {file_path}")
 
+    # [FA] ارسال عکس
     def send_photo(self, chat_id: int, photo_path: str, caption: Optional[str] = None, reply_to_message_id: Optional[int] = None, **kwargs) -> dict:
         return self._send_file("sendPhoto", "photo", chat_id, photo_path, caption, reply_to_message_id, **kwargs)
 
+    # [FA] ارسال فایل داکیومنت
     def send_document(self, chat_id: int, document_path: str, caption: Optional[str] = None, reply_to_message_id: Optional[int] = None, **kwargs) -> dict:
         return self._send_file("sendDocument", "document", chat_id, document_path, caption, reply_to_message_id, **kwargs)
 
+    # [FA] ارسال ویدیو
     def send_video(self, chat_id: int, video_path: str, caption: Optional[str] = None, reply_to_message_id: Optional[int] = None, **kwargs) -> dict:
         return self._send_file("sendVideo", "video", chat_id, video_path, caption, reply_to_message_id, **kwargs)
 
     def get_file(self, file_id: str) -> dict:
         return self._request("getFile", file_id=file_id)
 
+    # [FA] دانلود فایل از سرور جترا به حافظه
     def download_file(self, file_id: str, destination_path: str) -> str:
         file_info = self.get_file(file_id)
         file_path = file_info.get("file_path")
@@ -91,6 +102,7 @@ class JetraBot:
         except requests.RequestException as e:
             raise JetraError(f"Download failed: {e}")
 
+    # [FA] تنظیم منوی دستورات ربات
     def set_my_commands(self, commands: List[dict]) -> dict:
         return self._request("setMyCommands", commands=commands)
 
@@ -106,12 +118,14 @@ class JetraBot:
     def delete_webhook(self) -> dict:
         return self._request("deleteWebhook")
 
+    # [FA] پاسخ به کلیک دکمه‌های شیشه‌ای
     def answer_callback_query(self, callback_query_id: str, text: Optional[str] = None, show_alert: bool = False) -> dict:
         params = {"callback_query_id": callback_query_id}
         if text: params["text"] = text
         if show_alert: params["show_alert"] = True
         return self._request("answerCallbackQuery", **params)
 
+    # [FA] دریافت پیام‌های جدید از سرور
     def get_updates(self, offset: int = 0) -> List[dict]:
         return self._request("getUpdates", offset=offset, timeout=30, http_timeout=40)
 
@@ -138,6 +152,7 @@ class JetraBot:
             for handler in self._callback_handlers:
                 handler(cb)
 
+    # [FA] شروع حلقه دریافت پیام‌ها (Long Polling)
     def poll(self):
         print("Bot is polling (Sync)...")
         offset = 0
