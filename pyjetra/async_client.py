@@ -57,5 +57,6 @@ class AsyncJetraBot:
                         cb = CallbackQuery(update["callback_query"], self)
                         for handler in self._callback_handlers:
                             await handler(cb)
-            except Exception:
+            except Exception as e:
+                print(f"[Polling Error] {e}")
                 await asyncio.sleep(2)

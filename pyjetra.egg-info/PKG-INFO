@@ -1,0 +1,70 @@
+Metadata-Version: 2.4
+Name: pyjetra
+Version: 1.1.0
+Summary: A modern, bilingual (Sync/Async) Python wrapper for the Jetra Bot API.
+Author-email: Ali VEX <lyrdaadhrpyk802@gmail.com>
+Project-URL: Homepage, https://github.com/lyrdaadhrpyk802-ux/pyjetra
+Project-URL: Documentation, https://github.com/lyrdaadhrpyk802-ux/pyjetra/blob/main/README.md
+Project-URL: Jetra, https://jetra.ir/UserBoT
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+License-File: LICENSE
+License-File: AUTHORS.md
+Requires-Dist: requests>=2.25.0
+Requires-Dist: aiohttp>=3.8.0
+Dynamic: license-file
+
+# PyJetra Library
+### [EN] A Modern Python Wrapper for Jetra Bot API
+### [FA] یک کتابخانه مدرن پایتون برای API ربات جترا
+
+---
+
+## [EN] Features / [FA] امکانات
+* **Sync & Async Support** / پشتیبانی از Sync و Async
+* **State Management** / مدیریت وضعیت
+* **Advanced Filters** / فیلترهای پیشرفته
+* **Full Media Support** / پشتیبانی کامل از رسانه‌ها
+
+## [EN] Installation / [FA] نصب
+```bash
+pip install pyjetra
+```
+
+## [EN] Quick Start (Sync) / [FA] شروع سریع (همزمان)
+```python
+from pyjetra import JetraBot, CommandFilter
+
+bot = JetraBot('YOUR_TOKEN')
+
+@bot.on_message(filters=[CommandFilter('start')])
+def start(msg):
+    msg.reply('Hello from PyJetra!')
+
+bot.poll()
+```
+
+## [EN] Quick Start (Async) / [FA] شروع سریع (غیرهمزمان)
+```python
+from pyjetra import AsyncJetraBot, CommandFilter
+import asyncio
+
+bot = AsyncJetraBot('YOUR_TOKEN')
+
+@bot.on_message(filters=[CommandFilter('start')])
+async def start(msg):
+    await msg.reply('Hello Fast!')
+
+asyncio.run(bot.start_polling())
+```
+
+## [EN] Testing / [FA] تست کردن
+Navigate to the `tests/` folder and run the files.
+Read the comments inside each test file.
+
+## [EN] Developer / [FA] توسعه‌دهنده
+Created with ❤️ by Ali VEX
+GitHub: https://github.com/lyrdaadhrpyk802-ux

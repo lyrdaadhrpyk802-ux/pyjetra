@@ -12,7 +12,7 @@
 
 ## [EN] Installation / [FA] نصب
 ```bash
-pip install requests aiohttp
+pip install pyjetra
 ```
 
 ## [EN] Quick Start (Sync) / [FA] شروع سریع (همزمان)

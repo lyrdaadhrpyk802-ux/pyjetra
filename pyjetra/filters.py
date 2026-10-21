@@ -14,3 +14,13 @@ class TextFilter(Filter):
         self.text = text
     def __call__(self, message):
         return bool(message.text and message.text.lower() == self.text.lower())
+
+import re
+
+class RegexFilter(Filter):
+    # [EN] Filters messages using a regular expression pattern.
+    # [FA] Filters messages using a regular expression pattern.
+    def __init__(self, pattern: str):
+        self.pattern = re.compile(pattern)
+    def __call__(self, message):
+        return bool(message.text and self.pattern.search(message.text))
