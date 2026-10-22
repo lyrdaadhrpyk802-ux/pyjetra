@@ -1,3 +1,11 @@
+cd /storage/emulated/0/pyjetra || exit 1
+
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+mkdir -p "backups/readme_final_${TIMESTAMP}"
+cp README.md "backups/readme_final_${TIMESTAMP}/README.md.bak"
+echo "=== Backup: backups/readme_final_${TIMESTAMP}/ ==="
+
+cat > README.md << 'EOF'
 <div align="center">
 
 <img src="https://raw.githubusercontent.com/lyrdaadhrpyk802-ux/pyjetra/main/logo.png" width="220" alt="PyJetra Logo">
@@ -6,10 +14,10 @@
 
 **A modern, bilingual (Sync & Async) Python wrapper for the Jetra Bot API**
 
-[![PyPI](https://img.shields.io/badge/pypi-v1.4.0-blue?style=for-the-badge&logo=pypi)](https://pypi.org/project/pyjetra/)
-[![Python](https://img.shields.io/badge/python-3.7+-green?style=for-the-badge&logo=python)](https://www.python.org/)
-[![License](https://img.shields.io/badge/license-MIT-orange?style=for-the-badge)](LICENSE)
-[![Jetra](https://img.shields.io/badge/jetra.ir-official-purple?style=for-the-badge)](https://jetra.ir/)
+[![PyPI version](https://img.shields.io/pypi/v/pyjetra?style=for-the-badge&logo=pypi&color=blue)](https://pypi.org/project/pyjetra/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/pyjetra?style=for-the-badge&color=purple)](https://pypi.org/project/pyjetra/)
+[![Python versions](https://img.shields.io/pypi/pyversions/pyjetra?style=for-the-badge&logo=python)](https://pypi.org/project/pyjetra/)
+[![License](https://img.shields.io/github/license/lyrdaadhrpyk802-ux/pyjetra?style=for-the-badge&color=orange)](LICENSE)
 
 </div>
 
@@ -27,11 +35,11 @@ the **Jetra Bot API** with full support for both **synchronous** and
 Whether you're building a small personal bot or a large group-management
 system, PyJetra gives you all the tools you need — without hiding the details.
 
-### ✨ Features
+### ✨ Core Features
 
 - 🔄 **Sync & Async** — `JetraBot` (requests) and `AsyncJetraBot` (aiohttp)
 - 🎛️ **Full Bot API coverage** — messages, media, edits, deletes, callbacks, webhooks
-- 🧠 **FSM state management** — `set_state`, `get_state`, `clear_state`
+- 🧠 **FSM state management** — step-by-step conversations made easy
 - 🎨 **Inline keyboards** — multi-level menus, URL buttons, callbacks
 - 🧩 **Advanced filters** — `CommandFilter`, `TextFilter`, `RegexFilter`
 - 📨 **Edited message events** — `@bot.on_edited_message` decorator
@@ -64,31 +72,32 @@ def start(msg):
 @bot.on_callback_query()
 def on_button(cb):
     if cb.data == "about":
-        cb.answer("PyJetra v1.4.0 — Modern Python wrapper for Jetra Bot API")
+        cb.answer("PyJetra — Modern Python wrapper for Jetra Bot API")
 
 bot.poll()
 ```
 
-🧠 FSM Example
+🧠 Async Example
 
 ```python
-@bot.on_message(filters=[CommandFilter("register")])
-def register(msg):
-    bot.set_state(msg.from_user.id, "waiting_for_name")
-    msg.reply("What's your name?")
+import asyncio
+from pyjetra import AsyncJetraBot, CommandFilter
 
-@bot.on_message()
-def handle_name(msg):
-    if bot.get_state(msg.from_user.id) == "waiting_for_name":
-        bot.clear_state(msg.from_user.id)
-        msg.reply(f"Nice to meet you, {msg.text}!")
+bot = AsyncJetraBot("YOUR_BOT_TOKEN")
+
+@bot.on_message(filters=[CommandFilter("start")])
+async def start(msg):
+    await msg.reply("Hello from Async PyJetra!")
+
+asyncio.run(bot.start_polling())
 ```
 
-📚 Documentation
+📚 Documentation & Links
 
 · 📦 PyPI: pypi.org/project/pyjetra
 · 📁 GitHub: github.com/lyrdaadhrpyk802-ux/pyjetra
-· 🧪 Examples: see the tests/ folder for working scripts
+· 🐛 Issues: Report a bug
+· 🚀 Releases: Version history
 
 ---
 
@@ -97,25 +106,25 @@ def handle_name(msg):
 🚀 PyJetra چیه؟
 
 PyJetra اولین و کامل‌ترین کتابخانه‌ی پایتون برای ساخت ربات‌های
-جترا هست. یه رابط تمیز و مدرن روی Bot API جترا
-فراهم می‌کنه، با پشتیبانی کامل از هر دو حالت همگام (Sync) و
-ناهمگام (Async).
+جترا است. این کتابخانه یک رابط تمیز و مدرن روی
+Bot API جترا فراهم می‌کند و از هر دو حالت همگام (Sync) و
+ناهمگام (Async) به‌طور کامل پشتیبانی می‌کند.
 
-چه یه ربات شخصی کوچیک بسازی، چه یه سیستم مدیریت گروه بزرگ،
-PyJetra همه‌ی ابزارهای لازم رو در اختیارت می‌ذاره.
+چه یک ربات شخصی کوچک بسازید و چه یک سیستم مدیریت گروه بزرگ،
+PyJetra تمام ابزارهای لازم را در اختیار شما قرار می‌دهد.
 
-✨ امکانات
+✨ امکانات اصلی
 
 · 🔄 همگام و ناهمگام — JetraBot (requests) و AsyncJetraBot (aiohttp)
 · 🎛️ پوشش کامل Bot API — پیام، رسانه، ویرایش، حذف، کلیک‌ها، وب‌هوک
-· 🧠 مدیریت وضعیت (FSM) — set_state, get_state, clear_state
-· 🎨 دکمه‌های شیشه‌ای — منوهای چندسطحی، دکمه‌های URL، کال‌بک
-· 🧩 فیلترهای پیشرفته — CommandFilter, TextFilter, RegexFilter
+· 🧠 مدیریت وضعیت (FSM) — گفتگوهای چند مرحله‌ای
+· 🎨 دکمه‌های شیشه‌ای — منوهای چندسطحی، دکمه‌های لینک، کال‌بک
+· 🧩 فیلترهای پیشرفته — دستورات، متن، الگوهای Regex
 · 📨 رویداد ویرایش پیام — دکوراتور @bot.on_edited_message
 · 📎 پشتیبانی کامل رسانه — عکس، فایل، ویدیو، صدا، ویس، استیکر، انیمیشن، موقعیت، مخاطب، مکان
-· 🌐 آماده‌ی Webhook — set_webhook, delete_webhook, get_webhook_info
-· 💬 تایپ کامل Message — پارس reply_to_message، فوروارد، رویدادهای سرویس
-· 🐍 پایتونیک — type hint، dataclass تمیز، بدون boilerplate
+· 🌐 آماده‌ی Webhook — تنظیم، حذف و دریافت اطلاعات وب‌هوک
+· 💬 تایپ کامل Message — پارس reply_to_message، فوروارد و رویدادهای سرویس
+· 🐍 پایتونیک — type hint، dataclass تمیز، بدون کد اضافه
 
 📦 نصب
 
@@ -137,27 +146,6 @@ def start(msg):
 bot.poll()
 ```
 
-🧠 مثال FSM
-
-```python
-@bot.on_message(filters=[CommandFilter("register")])
-def register(msg):
-    bot.set_state(msg.from_user.id, "waiting_for_name")
-    msg.reply("اسمت چیه؟")
-
-@bot.on_message()
-def handle_name(msg):
-    if bot.get_state(msg.from_user.id) == "waiting_for_name":
-        bot.clear_state(msg.from_user.id)
-        msg.reply(f"خوشبختم، {msg.text}!")
-```
-
-📚 مستندات
-
-· 📦 PyPI: pypi.org/project/pyjetra
-· 📁 GitHub: github.com/lyrdaadhrpyk802-ux/pyjetra
-· 🧪 مثال‌ها: پوشه‌ی tests/ رو ببین
-
 ---
 
 👤 About the Developer
@@ -171,12 +159,10 @@ Bot Developer • Python Enthusiast • Jetra Community Member
 
 </div>
 
-🧭 Bio
-
 Ali VEX is a passionate Python developer who created PyJetra — the first
 and most complete Python library for the Jetra Bot API. He is active in the
 Jetra developer community and maintains JetraGuard, a full-featured
-group-management bot built on top of PyJetra as a real-world showcase.
+group-management bot built on top of PyJetra.
 
 His goal: make Jetra bot development accessible, clean, and fun for every
 developer — from beginners to professionals.
@@ -184,38 +170,8 @@ developer — from beginners to professionals.
 📬 Connect with Ali VEX
 
 Platform Link
-💬 Jetra Profile @UserBoT
-📢 PyJetra Channel @pyJetra
-👥 JetraGuard Community @Chatpyjetra
-🐙 GitHub lyrdaadhrpyk802-ux
+💬 Jetra Profile https://jetra.ir/UserBoT
+📢 PyJetra Channel https://jetra.ir/pyJetra
+👥 Community Chat https://jetra.ir/Chatpyjetra
+🐙 GitHub https://github.com/lyrdaadhrpyk802-ux/pyjetra
 📧 Email lyrdaadhrpyk802@gmail.com
-📦 PyPI pypi.org/project/pyjetra
-
----
-
-💬 Community & Support
-
-Got questions, ideas, or want to share what you built with PyJetra?
-Join the community on Jetra:
-
-· 📢 Channel — https://jetra.ir/pyJetra — release notes, updates, tutorials
-· 👥 Chat Group — https://jetra.ir/Chatpyjetra — ask questions, report bugs, share bots
-· 🐛 Issues — https://github.com/lyrdaadhrpyk802-ux/pyjetra/issues
-
-Every bit of feedback helps shape the next version of PyJetra. ❤️
-
----
-
-📜 License
-
-This project is licensed under the MIT License — see the LICENSE file for details.
-
----
-
-<div align="center">
-
-Made with ❤️ for the Jetra community
-
-ساخته‌شده با ❤️ برای جامعه‌ی جترا
-
-</div>
