@@ -29,7 +29,7 @@ def print_banner():
 
     info = (
         f"{C_CYAN}   --------------------------------------------------\n"
-        f"{C_YELLOW}   Version   : {C_GREEN}v1.4.0\n"
+        f"{C_YELLOW}   Version   : {C_GREEN}v1.5.0\n"
         f"{C_YELLOW}   Developer : {C_GREEN}Ali VEX\n"
         f"{C_YELLOW}   GitHub    : {C_GREEN}https://github.com/lyrdaadhrpyk802-ux\n"
         f"{C_YELLOW}   PyPI      : {C_GREEN}https://pypi.org/project/pyjetra/\n"

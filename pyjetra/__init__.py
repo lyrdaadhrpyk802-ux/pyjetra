@@ -1,4 +1,4 @@
-__version__ = "1.4.0"
+__version__ = "1.5.0"
 
 from .banner import print_banner
 from .client import JetraBot
