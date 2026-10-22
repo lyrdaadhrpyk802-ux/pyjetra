@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Backups (local only)
+backups/
+*.bak
+*.py.new
+
+# Live test secrets
+_live_test.env
+_live_test.py
+.env
+*.env
+!.env.example
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups archive (local only)
+backups_*.tar.gz

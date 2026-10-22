@@ -1,3 +1,5 @@
+__version__ = "1.4.0"
+
 from .banner import print_banner
 from .client import JetraBot
 from .async_client import AsyncJetraBot

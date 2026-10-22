@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyjetra"
-version = "1.3.0"
+version = "1.4.0"
 authors = [
     {name = "Ali VEX", email = "lyrdaadhrpyk802@gmail.com"}
 ]
@@ -25,3 +25,10 @@ dependencies = [
 Homepage = "https://github.com/lyrdaadhrpyk802-ux/pyjetra"
 Documentation = "https://github.com/lyrdaadhrpyk802-ux/pyjetra/blob/main/README.md"
 Jetra = "https://jetra.ir/UserBoT"
+
+[tool.setuptools]
+packages = ["pyjetra", "pyjetra.types"]
+zip-safe = false
+
+[tool.setuptools.package-data]
+pyjetra = ["*.py"]

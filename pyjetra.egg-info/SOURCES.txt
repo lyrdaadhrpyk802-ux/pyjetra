@@ -12,6 +12,7 @@ pyjetra/filters.py
 pyjetra.egg-info/PKG-INFO
 pyjetra.egg-info/SOURCES.txt
 pyjetra.egg-info/dependency_links.txt
+pyjetra.egg-info/not-zip-safe
 pyjetra.egg-info/requires.txt
 pyjetra.egg-info/top_level.txt
 pyjetra/types/__init__.py
