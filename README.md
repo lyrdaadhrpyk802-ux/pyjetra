@@ -198,9 +198,9 @@ Platform Link
 Got questions, ideas, or want to share what you built with PyJetra?
 Join the community on Jetra:
 
-· 📢 Channel — jetra.ir/pyJetra — release notes, updates, tutorials
-· 👥 Chat Group — jetra.ir/Chatpyjetra — ask questions, report bugs, share bots
-· 🐛 Issues — github.com/lyrdaadhrpyk802-ux/pyjetra/issues
+· 📢 Channel — https://jetra.ir/pyJetra — release notes, updates, tutorials
+· 👥 Chat Group — https://jetra.ir/Chatpyjetra — ask questions, report bugs, share bots
+· 🐛 Issues — https://github.com/lyrdaadhrpyk802-ux/pyjetra/issues
 
 Every bit of feedback helps shape the next version of PyJetra. ❤️
 
