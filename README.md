@@ -161,7 +161,7 @@ group-management bot built on top of PyJetra.
 His goal: make Jetra bot development accessible, clean, and fun for every
 developer, from beginners to professionals.
 
-Connect
+Connect.
 
 Platform Link
 Jetra Profile https://jetra.ir/UserBoT
