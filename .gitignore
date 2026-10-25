@@ -38,3 +38,7 @@ Thumbs.db
 
 # Backups archive (local only)
 backups_*.tar.gz
+
+# Temp / stray
+README.md.raw
+types/
