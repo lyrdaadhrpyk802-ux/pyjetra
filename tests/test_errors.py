@@ -6,7 +6,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.stdout.isatty = lambda: False
 
-from pyjetra import JetraError
+from pyjetra import JetraError, FileTooLargeError
 
 
 def test_jetra_error_is_exception():
@@ -34,6 +34,22 @@ def test_jetra_error_raise_from():
     except JetraError as e:
         assert str(e) == "wrapped"
         assert isinstance(e.__cause__, ValueError)
+
+
+def test_file_too_large_is_jetra_error():
+    assert issubclass(FileTooLargeError, JetraError)
+
+
+def test_file_too_large_message():
+    e = FileTooLargeError("too big")
+    assert str(e) == "too big"
+
+
+def test_file_too_large_catch_as_jetra():
+    try:
+        raise FileTooLargeError("big")
+    except JetraError as e:
+        assert isinstance(e, FileTooLargeError)
 
 
 def run():
