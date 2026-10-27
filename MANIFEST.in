@@ -1,0 +1,6 @@
+include LICENSE
+include AUTHORS.md
+include README.md
+include logo.png
+recursive-include pyjetra *.py
+recursive-include tests *.py
