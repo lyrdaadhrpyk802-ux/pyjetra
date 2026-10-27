@@ -1,3 +1,5 @@
+
+
 ```markdown
 <div align="center">
 
@@ -20,26 +22,26 @@
 
 ### What is PyJetra?
 
-**PyJetra** is the first and most complete Python library for building
-[Jetra](https://jetra.ir/) bots. It provides a clean, modern interface over
-the **Jetra Bot API** with full support for both **synchronous** and
-**asynchronous** workflows.
+**PyJetra** is a Python library for building [Jetra](https://jetra.ir/) bots.
+It wraps the **Jetra Bot API** in a clean, modern interface with full support
+for both **synchronous** and **asynchronous** workflows.
 
 Whether you are building a small personal bot or a large group-management
-system, PyJetra gives you all the tools you need without hiding the details.
+system, PyJetra gives you the tools you need without hiding the details.
 
-### Core Features
+### Highlights
 
-- **Sync and Async** - `JetraBot` (requests) and `AsyncJetraBot` (aiohttp)
-- **Full Bot API coverage** - messages, media, edits, deletes, callbacks, webhooks
-- **FSM state management** - step-by-step conversations made easy
-- **Inline keyboards** - multi-level menus, URL buttons, callbacks
-- **Advanced filters** - `CommandFilter`, `TextFilter`, `RegexFilter`
-- **Edited message events** - `@bot.on_edited_message` decorator
-- **Full media support** - photo, document, video, audio, voice, sticker, animation, location, contact, venue
-- **Webhook ready** - `set_webhook`, `delete_webhook`, `get_webhook_info`
-- **Rich Message type** - parses `reply_to_message`, forwards, service events
-- **Pythonic** - type hints, clean dataclasses, no boilerplate
+- Sync and async clients (`JetraBot` and `AsyncJetraBot`)
+- Full Bot API coverage: messages, media, edits, deletes, callbacks, webhooks
+- FSM state management for step-by-step conversations
+- Inline keyboards with multi-level menus, URL buttons, and callbacks
+- Filters: `CommandFilter`, `TextFilter`, `RegexFilter`
+- Edited message events via `on_edited_message`
+- Media support: photo, document, video, audio, voice, sticker,
+  animation, location, contact, venue, live photo
+- Webhook ready: `set_webhook`, `delete_webhook`, `get_webhook_info`
+- Rich `Message` type: replies, forwards, service events
+- Pythonic: type hints, clean dataclasses, no boilerplate
 
 ### Installation
 
@@ -47,10 +49,15 @@ system, PyJetra gives you all the tools you need without hiding the details.
 pip install pyjetra
 ```
 
-Quick Start
+Quick start
 
 ```python
-from pyjetra import JetraBot, CommandFilter, InlineKeyboardMarkup, InlineKeyboardButton
+from pyjetra import (
+    JetraBot,
+    CommandFilter,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
 
 bot = JetraBot("YOUR_BOT_TOKEN")
 
@@ -65,12 +72,12 @@ def start(msg):
 @bot.on_callback_query()
 def on_button(cb):
     if cb.data == "about":
-        cb.answer("PyJetra - Modern Python wrapper for Jetra Bot API")
+        cb.answer("PyJetra - Python wrapper for the Jetra Bot API")
 
 bot.poll()
 ```
 
-Async Example
+Async example
 
 ```python
 import asyncio
@@ -85,12 +92,12 @@ async def start(msg):
 asyncio.run(bot.start_polling())
 ```
 
-Documentation and Links
+Links
 
-· PyPI: https://pypi.org/project/pyjetra
-· GitHub: https://github.com/lyrdaadhrpyk802-ux/pyjetra
-· Issues: https://github.com/lyrdaadhrpyk802-ux/pyjetra/issues
-· Releases: https://github.com/lyrdaadhrpyk802-ux/pyjetra/releases
+· PyPI: 
+· GitHub: 
+· Issues: 
+· Releases: 
 
 ---
 
@@ -98,26 +105,27 @@ Documentation and Links
 
 PyJetra چیست؟
 
-PyJetra اولین و کامل‌ترین کتابخانه‌ی پایتون برای ساخت ربات‌های
+PyJetra یک کتابخانه‌ی پایتون برای ساخت ربات‌های
 جترا است. این کتابخانه یک رابط تمیز و مدرن روی
-Bot API جترا فراهم می‌کند و از هر دو حالت همگام (Sync) و
+Jetra Bot API فراهم می‌کند و از هر دو حالت همگام (Sync) و
 ناهمگام (Async) به‌طور کامل پشتیبانی می‌کند.
 
 چه یک ربات شخصی کوچک بسازید و چه یک سیستم مدیریت گروه بزرگ،
 PyJetra تمام ابزارهای لازم را در اختیار شما قرار می‌دهد.
 
-امکانات اصلی
+امکانات
 
-· همگام و ناهمگام - JetraBot (requests) و AsyncJetraBot (aiohttp)
-· پوشش کامل Bot API - پیام، رسانه، ویرایش، حذف، کلیک‌ها، وب‌هوک
-· مدیریت وضعیت (FSM) - گفتگوهای چند مرحله‌ای
-· دکمه‌های شیشه‌ای - منوهای چندسطحی، دکمه‌های لینک، کال‌بک
-· فیلترهای پیشرفته - دستورات، متن، الگوهای Regex
-· رویداد ویرایش پیام - دکوراتور @bot.on_edited_message
-· پشتیبانی کامل رسانه - عکس، فایل، ویدیو، صدا، ویس، استیکر، انیمیشن، موقعیت، مخاطب، مکان
-· آماده‌ی Webhook - تنظیم، حذف و دریافت اطلاعات وب‌هوک
-· تایپ کامل Message - پارس reply_to_message، فوروارد و رویدادهای سرویس
-· پایتونیک - type hint، dataclass تمیز، بدون کد اضافه
+· کلاینت همگام و ناهمگام (JetraBot و AsyncJetraBot)
+· پوشش کامل Bot API: پیام، رسانه، ویرایش، حذف، کال‌بک، وب‌هوک
+· مدیریت وضعیت (FSM) برای گفتگوهای چندمرحله‌ای
+· دکمه‌های شیشه‌ای با منوهای چندسطحی، دکمه‌های لینک و کال‌بک
+· فیلترها: CommandFilter، TextFilter، RegexFilter
+· رویداد ویرایش پیام با on_edited_message
+· پشتیبانی رسانه: عکس، فایل، ویدیو، صدا، ویس، استیکر، انیمیشن،
+  موقعیت، مخاطب، مکان، لایو فوتو
+· آماده‌ی وب‌هوک: set_webhook، delete_webhook، get_webhook_info
+· تایپ کامل Message: پاسخ‌ها، فوروارد، رویدادهای سرویس
+· پایتونیک: type hint، dataclass تمیز، بدون کد اضافه
 
 نصب
 
@@ -128,46 +136,68 @@ pip install pyjetra
 شروع سریع
 
 ```python
-from pyjetra import JetraBot, CommandFilter
+from pyjetra import (
+    JetraBot,
+    CommandFilter,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+)
 
 bot = JetraBot("YOUR_BOT_TOKEN")
 
 @bot.on_message(filters=[CommandFilter("start")])
 def start(msg):
-    msg.reply("سلام از PyJetra!")
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton(text="ورود به جترا", url="https://jetra.ir")],
+        [InlineKeyboardButton(text="درباره", callback_data="about")],
+    ])
+    msg.reply("به PyJetra خوش آمدید!", reply_markup=keyboard)
+
+@bot.on_callback_query()
+def on_button(cb):
+    if cb.data == "about":
+        cb.answer("PyJetra - کتابخانه‌ی پایتون برای Jetra Bot API")
 
 bot.poll()
 ```
 
+لینک‌ها
+
+· PyPI: 
+· گیت‌هاب: 
+· گزارش مشکل: 
+· نسخه‌ها: 
+
 ---
 
-About the Developer
+About the developer
 
 <div align="center">
 
 Ali VEX
 
-Founder and Lead Developer of PyJetra
-
-Bot Developer | Python Enthusiast | Jetra Community Member
+Founder and lead developer of PyJetra
+Bot developer, Python enthusiast, Jetra community member
 
 </div>
 
-Ali VEX is a passionate Python developer who created PyJetra - the first
-and most complete Python library for the Jetra Bot API. He is active in the
-Jetra developer community and maintains JetraGuard, a full-featured
-group-management bot built on top of PyJetra.
+Ali VEX is a Python developer who created PyJetra, a Python library for the
+Jetra Bot API. He is active in the Jetra developer community and maintains
+JetraGuard, a group-management bot built on top of PyJetra.
 
-His goal: make Jetra bot development accessible, clean, and fun for every
-developer, from beginners to professionals.
+Contact
 
-Connect.
+· Jetra profile: 
+· PyJetra channel: 
+· Community chat: 
+· GitHub: 
+· Email: 
 
-Platform Link
-Jetra Profile https://jetra.ir/UserBoT
-PyJetra Channel https://jetra.ir/pyJetra
-Community Chat https://jetra.ir/Chatpyjetra
-GitHub https://github.com/lyrdaadhrpyk802-ux/pyjetra
-Email lyrdaadhrpyk802@gmail.com
+---
+
+License
+
+Released under the MIT License. See the LICENSE file for details.
 
 ```
+
