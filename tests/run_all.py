@@ -22,6 +22,7 @@ OFFLINE_TESTS = [
     "tests.test_fsm",
     "tests.test_errors",
     "tests.test_api_surface",
+    "tests.test_limits",
 ]
 
 

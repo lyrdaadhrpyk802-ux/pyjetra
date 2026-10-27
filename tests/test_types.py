@@ -29,11 +29,44 @@ def test_user_with_optionals():
     assert u.username == "my_bot"
 
 
+def test_user_full_name():
+    u = User(id=1, is_bot=False, first_name="Ali", last_name="VEX")
+    assert u.full_name == "Ali VEX"
+
+
+def test_user_full_name_no_last():
+    u = User(id=1, is_bot=False, first_name="Ali")
+    assert u.full_name == "Ali"
+
+
+def test_user_mention():
+    u = User(id=1, is_bot=False, first_name="Ali", username="ali")
+    assert u.mention == "@ali"
+
+
+def test_user_mention_fallback():
+    u = User(id=1, is_bot=False, first_name="Ali")
+    assert u.mention == "Ali"
+
+
 def test_chat():
     c = Chat(id=-100, type="supergroup", title="Test")
     assert c.id == -100
     assert c.type == "supergroup"
     assert c.title == "Test"
+
+
+def test_chat_kind_properties():
+    assert Chat(id=1, type="private").is_private
+    assert Chat(id=1, type="supergroup").is_group
+    assert Chat(id=1, type="channel").is_channel
+    assert not Chat(id=1, type="private").is_group
+
+
+def test_chat_display_name():
+    assert Chat(id=1, type="private", first_name="Ali").display_name == "Ali"
+    assert Chat(id=1, type="supergroup", title="T").display_name == "T"
+    assert Chat(id=42, type="channel").display_name == "42"
 
 
 def test_chat_permissions_empty():
@@ -76,6 +109,45 @@ def test_chat_permissions_all_fields():
 def test_chat_permissions_repr():
     p = ChatPermissions(can_send_messages=True)
     assert "can_send_messages" in repr(p)
+
+
+def test_chat_permissions_stickers_fallback():
+    p = ChatPermissions(can_send_other_messages=True)
+    d = p.to_dict()
+    assert d["can_send_stickers"] is True
+    assert d["can_send_gifs"] is True
+
+
+def test_chat_permissions_stickers_explicit_override():
+    p = ChatPermissions(
+        can_send_other_messages=True,
+        can_send_stickers=False,
+    )
+    d = p.to_dict()
+    assert d["can_send_stickers"] is False
+    assert d["can_send_gifs"] is True
+
+
+def test_chat_permissions_no_other_no_fallback():
+    p = ChatPermissions(can_send_messages=True)
+    d = p.to_dict()
+    assert "can_send_stickers" not in d
+    assert "can_send_gifs" not in d
+
+
+def test_chat_permissions_factories():
+    m = ChatPermissions.muted().to_dict()
+    assert m and all(v is False for v in m.values())
+    t = ChatPermissions.text_only().to_dict()
+    assert t["can_send_messages"] is True
+    assert t["can_send_photos"] is False
+    e = ChatPermissions.everything().to_dict()
+    assert e and all(v is True for v in e.values())
+
+
+def test_chat_permissions_from_dict():
+    p = ChatPermissions.from_dict({"can_send_messages": True})
+    assert p.to_dict()["can_send_messages"] is True
 
 
 def test_inline_button_callback():

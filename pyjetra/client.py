@@ -1,11 +1,12 @@
 # [EN] PyJetra - Synchronous client for the Jetra Bot API.
 
+import os
 import time
 from typing import Any, Callable, List, Optional
 
 import requests
 
-from .exceptions import JetraError
+from .exceptions import JetraError, FileTooLargeError
 from .types import (
     User,
     Message,
@@ -25,6 +26,10 @@ def _to_dict(value):
     if hasattr(value, "to_dict"):
         return value.to_dict()
     return value
+
+
+# Jetra caps each uploaded file at 25 MB.
+MAX_UPLOAD_BYTES = 25 * 1024 * 1024
 
 
 class JetraBot:
@@ -131,6 +136,12 @@ class JetraBot:
 
     def ban_chat_member(self, chat_id, user_id,
                         until_date: Optional[int] = None) -> dict:
+        """Ban a member from a chat.
+
+        Note: ``revoke_messages=true`` is not supported yet; the server
+        rejects it with ``REVOKE_MESSAGES_UNSUPPORTED``. To delete
+        previous messages, call ``delete_message`` for each message id.
+        """
         params = {"chat_id": chat_id, "user_id": user_id}
         if until_date:
             params["until_date"] = until_date
@@ -175,8 +186,9 @@ class JetraBot:
     # ------------------------------------------------------------------
     def send_message(self, chat_id: int, text: str,
                      reply_to_message_id: Optional[int] = None,
-                     reply_markup: Optional[InlineKeyboardMarkup] = None) -> dict:
-        params = {"chat_id": chat_id, "text": text}
+                     reply_markup: Optional[InlineKeyboardMarkup] = None,
+                     **kwargs) -> dict:
+        params = {"chat_id": chat_id, "text": text, **kwargs}
         if reply_to_message_id:
             params["reply_to_message_id"] = reply_to_message_id
         if reply_markup:
@@ -202,6 +214,15 @@ class JetraBot:
             params["caption"] = caption
         if reply_to_message_id:
             params["reply_to_message_id"] = reply_to_message_id
+        try:
+            size = os.path.getsize(file_path)
+        except FileNotFoundError:
+            raise JetraError(f"File not found: {file_path}")
+        if size > MAX_UPLOAD_BYTES:
+            raise FileTooLargeError(
+                f"File too large: {size} bytes "
+                f"(Jetra limit is {MAX_UPLOAD_BYTES} bytes)"
+            )
         try:
             with open(file_path, "rb") as file:
                 return self._request(
@@ -462,13 +483,25 @@ class JetraBot:
     # ------------------------------------------------------------------
     # Webhook
     # ------------------------------------------------------------------
-    def set_webhook(self, url: str, secret_token: Optional[str] = None,
-                    allowed_updates: Optional[List[str]] = None) -> dict:
+    def set_webhook(self, url: str,
+                    secret_token: Optional[str] = None,
+                    allowed_updates: Optional[List[str]] = None,
+                    max_connections: Optional[int] = None,
+                    drop_pending_updates: Optional[bool] = None) -> dict:
         params = {"url": url}
         if secret_token:
             params["secret_token"] = secret_token
         if allowed_updates:
             params["allowed_updates"] = allowed_updates
+        if max_connections is not None:
+            # Bot API allows 1 to 100 concurrent connections.
+            if max_connections < 1:
+                max_connections = 1
+            elif max_connections > 100:
+                max_connections = 100
+            params["max_connections"] = max_connections
+        if drop_pending_updates is not None:
+            params["drop_pending_updates"] = drop_pending_updates
         return self._request("setWebhook", **params)
 
     def delete_webhook(self) -> dict:
@@ -552,11 +585,26 @@ class JetraBot:
     # Updates
     # ------------------------------------------------------------------
     def get_updates(self, offset: int = 0,
+                    limit: int = 100,
+                    timeout: int = 30,
                     allowed_updates: Optional[List[str]] = None) -> List[dict]:
-        params = {"offset": offset, "timeout": 30}
+        # Jetra caps long polling at 100 updates and 50 seconds.
+        # Clamp values so callers cannot send out-of-range numbers.
+        if limit < 1:
+            limit = 1
+        elif limit > 100:
+            limit = 100
+        if timeout < 0:
+            timeout = 0
+        elif timeout > 50:
+            timeout = 50
+
+        params = {"offset": offset, "limit": limit, "timeout": timeout}
         if allowed_updates:
             params["allowed_updates"] = allowed_updates
-        return self._request("getUpdates", http_timeout=40, **params)
+        # Give the HTTP layer a little headroom over the long-poll window.
+        http_timeout = max(40, timeout + 10)
+        return self._request("getUpdates", http_timeout=http_timeout, **params)
 
     # ------------------------------------------------------------------
     # Decorators

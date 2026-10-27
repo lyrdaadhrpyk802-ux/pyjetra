@@ -80,6 +80,21 @@ def test_message_reply():
     assert m.reply_to_message.from_user.id == 99
 
 
+def test_message_reply_without_from():
+    # Per Jetra docs, reply_to_message.from is only present when the
+    # parent message is still visible to the bot.
+    d = _base()
+    d["text"] = "response"
+    d["reply_to_message"] = {
+        "message_id": 0,
+        "chat": {"id": 42, "type": "private"},
+        "text": "original",
+    }
+    m = _msg(d)
+    assert m.reply_to_message is not None
+    assert m.reply_to_message.from_user is None
+
+
 def test_message_no_reply():
     m = _msg(_base())
     assert m.reply_to_message is None

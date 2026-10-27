@@ -6,7 +6,7 @@ from typing import Any, Callable, List, Optional
 
 import aiohttp
 
-from .exceptions import JetraError
+from .exceptions import JetraError, FileTooLargeError
 from .types import (
     User,
     Message,
@@ -28,8 +28,25 @@ def _to_dict(value):
     return value
 
 
+# Jetra caps each uploaded file at 25 MB.
+MAX_UPLOAD_BYTES = 25 * 1024 * 1024
+
+
 class AsyncJetraBot:
-    """Async client for interacting with the Jetra Bot API."""
+    """Async client for interacting with the Jetra Bot API.
+
+    Can be used as an async context manager to ensure the underlying
+    aiohttp session is closed:
+
+        async with AsyncJetraBot("TOKEN") as bot:
+            await bot.send_message(123, "hi")
+
+    Or close it manually:
+
+        bot = AsyncJetraBot("TOKEN")
+        ...
+        await bot.close()
+    """
 
     def __init__(self, token: str):
         self.token = token
@@ -43,6 +60,24 @@ class AsyncJetraBot:
         self._chat_member_handlers = []
         self._my_chat_member_handlers = []
         self._states = {}
+
+    # ------------------------------------------------------------------
+    # Session lifecycle
+    # ------------------------------------------------------------------
+    async def close(self):
+        """Close the underlying aiohttp session if it exists."""
+        if self._session is not None and not self._session.closed:
+            await self._session.close()
+        self._session = None
+
+    async def __aenter__(self):
+        if self._session is None or self._session.closed:
+            self._session = aiohttp.ClientSession()
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb):
+        await self.close()
+        return False
 
     # ------------------------------------------------------------------
     # State management (FSM)
@@ -100,6 +135,16 @@ class AsyncJetraBot:
                          **kwargs) -> dict:
         if self._session is None or self._session.closed:
             self._session = aiohttp.ClientSession()
+
+        try:
+            size = os.path.getsize(file_path)
+        except FileNotFoundError:
+            raise JetraError(f"File not found: {file_path}")
+        if size > MAX_UPLOAD_BYTES:
+            raise FileTooLargeError(
+                f"File too large: {size} bytes "
+                f"(Jetra limit is {MAX_UPLOAD_BYTES} bytes)"
+            )
 
         url = self.base_url + method
         data = aiohttp.FormData()
@@ -170,6 +215,12 @@ class AsyncJetraBot:
 
     async def ban_chat_member(self, chat_id, user_id,
                               until_date: Optional[int] = None) -> dict:
+        """Ban a member from a chat.
+
+        Note: ``revoke_messages=true`` is not supported yet; the server
+        rejects it with ``REVOKE_MESSAGES_UNSUPPORTED``. To delete
+        previous messages, call ``delete_message`` for each message id.
+        """
         params = {"chat_id": chat_id, "user_id": user_id}
         if until_date:
             params["until_date"] = until_date
@@ -220,8 +271,9 @@ class AsyncJetraBot:
     # ------------------------------------------------------------------
     async def send_message(self, chat_id: int, text: str,
                            reply_to_message_id: Optional[int] = None,
-                           reply_markup: Optional[InlineKeyboardMarkup] = None) -> dict:
-        params = {"chat_id": chat_id, "text": text}
+                           reply_markup: Optional[InlineKeyboardMarkup] = None,
+                           **kwargs) -> dict:
+        params = {"chat_id": chat_id, "text": text, **kwargs}
         if reply_to_message_id:
             params["reply_to_message_id"] = reply_to_message_id
         if reply_markup:
@@ -522,12 +574,23 @@ class AsyncJetraBot:
 
     async def set_webhook(self, url: str,
                           secret_token: Optional[str] = None,
-                          allowed_updates: Optional[List[str]] = None) -> dict:
+                          allowed_updates: Optional[List[str]] = None,
+                          max_connections: Optional[int] = None,
+                          drop_pending_updates: Optional[bool] = None) -> dict:
         params = {"url": url}
         if secret_token:
             params["secret_token"] = secret_token
         if allowed_updates:
             params["allowed_updates"] = allowed_updates
+        if max_connections is not None:
+            # Bot API allows 1 to 100 concurrent connections.
+            if max_connections < 1:
+                max_connections = 1
+            elif max_connections > 100:
+                max_connections = 100
+            params["max_connections"] = max_connections
+        if drop_pending_updates is not None:
+            params["drop_pending_updates"] = drop_pending_updates
         return await self._request("setWebhook", **params)
 
     async def delete_webhook(self) -> dict:
@@ -616,11 +679,26 @@ class AsyncJetraBot:
     # Updates
     # ------------------------------------------------------------------
     async def get_updates(self, offset: int = 0,
+                          limit: int = 100,
+                          timeout: int = 30,
                           allowed_updates: Optional[List[str]] = None) -> List[dict]:
-        params = {"offset": offset, "timeout": 30}
+        # Jetra caps long polling at 100 updates and 50 seconds.
+        # Clamp values so callers cannot send out-of-range numbers.
+        if limit < 1:
+            limit = 1
+        elif limit > 100:
+            limit = 100
+        if timeout < 0:
+            timeout = 0
+        elif timeout > 50:
+            timeout = 50
+
+        params = {"offset": offset, "limit": limit, "timeout": timeout}
         if allowed_updates:
             params["allowed_updates"] = allowed_updates
-        return await self._request("getUpdates", http_timeout=40, **params)
+        # Give the HTTP layer a little headroom over the long-poll window.
+        http_timeout = max(40, timeout + 10)
+        return await self._request("getUpdates", http_timeout=http_timeout, **params)
 
     # ------------------------------------------------------------------
     # Decorators
@@ -709,16 +787,19 @@ class AsyncJetraBot:
     async def start_polling(self, allowed_updates: Optional[List[str]] = None):
         print("Bot is polling (Async)...")
         offset = 0
-        while True:
-            try:
-                updates = await self.get_updates(
-                    offset, allowed_updates=allowed_updates
-                )
-                for update in updates:
-                    offset = update["update_id"] + 1
-                    await self.process_update(update)
-            except asyncio.CancelledError:
-                break
-            except Exception as e:
-                print(f"[Polling Error] {e}")
-                await asyncio.sleep(2)
+        try:
+            while True:
+                try:
+                    updates = await self.get_updates(
+                        offset, allowed_updates=allowed_updates
+                    )
+                    for update in updates:
+                        offset = update["update_id"] + 1
+                        await self.process_update(update)
+                except asyncio.CancelledError:
+                    raise
+                except Exception as e:
+                    print(f"[Polling Error] {e}")
+                    await asyncio.sleep(2)
+        finally:
+            await self.close()
