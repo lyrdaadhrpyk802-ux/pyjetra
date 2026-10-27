@@ -2,7 +2,7 @@
 ```markdown
 <div align="center">
 
-<img src="logo.png" width="220" alt="PyJetra Logo">
+<img src="https://raw.githubusercontent.com/lyrdaadhrpyk802-ux/pyjetra/main/logo.png" width="220" alt="PyJetra Logo">
 
 # PyJetra
 
