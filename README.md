@@ -1,4 +1,3 @@
-```markdown
 # PyJetra
 
 یک کتابخانه‌ی مدرن پایتون برای ساخت ربات‌های پیام‌رسان جترا (همگام و ناهمگام).
@@ -63,11 +62,5 @@ asyncio.run(main())
 
 Ali VEX
 
-· پروفایل جترا (Jetra Profile): https://jetra:irUserBoT
+· پروفایل جترا (Jetra Profile): https://jetra.ir/UserBoT
 · ایمیل (Email): lyrdaadhrpyk802@gmail.com
-
----
-
-Released under the MIT License.
-
-```
