@@ -55,15 +55,15 @@ asyncio.run(main())
 
 مستندات و لینک‌ها / Links
 
-· مستندات رسمی جترا (Jetra Docs): jetra.ir/docs/bots
-· مخزن گیت‌هاب (GitHub): github.com/lyrdaadhrpyk802-ux/pyjetra
-· گزارش مشکلات (Issues): github.com/lyrdaadhrpyk802-ux/pyjetra/issues
+· مستندات رسمی جترا (Jetra Docs): https://jetra.ir/docs/bots
+· مخزن گیت‌هاب (GitHub): https://github.com/lyrdaadhrpyk802-ux/pyjetra
+· گزارش مشکلات (Issues): https://github.com/lyrdaadhrpyk802-ux/pyjetra/issues
 
 توسعه‌دهنده / Developer
 
 Ali VEX
 
-· پروفایل جترا (Jetra Profile): @UserBoT
+· پروفایل جترا (Jetra Profile): https://jetra:irUserBoT
 · ایمیل (Email): lyrdaadhrpyk802@gmail.com
 
 ---
