@@ -3,6 +3,7 @@
 ## [2.0.2] - 2026-11-07
 
 ### Fixed
+- botapi, userapi: `__version__` was stuck at the pre-merge value; both now match the package version 2.0.2.
 - userapi: `send_poll` rewritten to match the schema: `public_voters` uses the correct flag bit, `option` is length-prefixed TL bytes, quiz mode sends `correct_answers`, and input validation is added (2 to 10 options).
 - Verified against the live server by sending a basic poll and a quiz poll to Saved Messages.
 
