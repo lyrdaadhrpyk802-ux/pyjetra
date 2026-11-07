@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.env
+.venv/
+venv/
+data/
+*.db
+*session*.json
+.pyjetra/
