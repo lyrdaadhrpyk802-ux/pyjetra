@@ -8854,60 +8854,63 @@ class JetraClient:
     # ------------------------------------------------------------------
 
     async def send_poll(self, peer_id, question, options, peer_type=None,
-                        multiple_choice=False, quiz=False, anonymous=True):
+                        multiple_choice=False, quiz=False, anonymous=True,
+                        correct_answers=None):
         """
         Send a poll.
 
         Args:
             peer_id:         target peer.
             question:        poll question text.
-            options:         list of answer strings.
+            options:         list of answer strings (Telegram limit 2-10; Jetra limit unverified).
             peer_type:       "user" or "group".
             multiple_choice: allow multiple answers.
-            quiz:            quiz mode (correct answer required).
+            quiz:            quiz mode; requires correct_answers.
             anonymous:       hide voter identities.
+            correct_answers: 0-based option indexes that are correct (quiz only).
 
         Returns:
-            raw messages.sendMedia response.
+            parsed sent message, or dict with raw_len.
         """
         if not self._is_running:
             raise JetraError("Client not started.")
+        if not (2 <= len(options) <= 10):
+            raise JetraError("A poll needs between 2 and 10 options.")
+        if quiz and not correct_answers:
+            raise JetraError("Quiz mode requires correct_answers.")
+        if quiz and any(not (0 <= int(i) < len(options)) for i in correct_answers):
+            raise JetraError("correct_answers index out of range.")
 
-        # poll#966e2dbf flags:# ...
-        # question:TextWithEntities answers:Vector<PollAnswer>
+        # poll flags per schema: bit1 public_voters, bit2 multiple_choice, bit3 quiz
         poll_flags = 0
         if not anonymous:
-            poll_flags |= 0x1  # public_voters
+            poll_flags |= 0x2
         if multiple_choice:
-            poll_flags |= 0x4  # multiple_choice
+            poll_flags |= 0x4
         if quiz:
-            poll_flags |= 0x8  # quiz
+            poll_flags |= 0x8
 
-        # TextWithEntities
         question_obj = (
-            struct.pack("<I", 0x751F3146) +
+            struct.pack("<I", 0x751F3146) +  # textWithEntities
             self._tl_string(question) +
             struct.pack("<I", VECTOR_CTOR) +
             struct.pack("<i", 0)
         )
 
-        # PollAnswer items
         answers_items = b""
         for i, opt in enumerate(options):
             answer_text = (
-                struct.pack("<I", 0x751F3146) +
+                struct.pack("<I", 0x751F3146) +  # textWithEntities
                 self._tl_string(opt) +
                 struct.pack("<I", VECTOR_CTOR) +
                 struct.pack("<i", 0)
             )
-            option = struct.pack("<B", i) + b"\x00\x00\x00"  # 4-byte option
             answers_items += (
-                struct.pack("<I", 0x4B7D786A) +  # pollAnswer
-                struct.pack("<I", 0) +  # flags
+                struct.pack("<I", 0x4B7D786A) +   # pollAnswer
+                struct.pack("<I", 0) +            # pollAnswer.flags
                 answer_text +
-                option
+                self._tl_bytes(bytes([i]))        # option: TL bytes, length-prefixed
             )
-
         answers_vec = (
             struct.pack("<I", VECTOR_CTOR) +
             struct.pack("<i", len(options)) +
@@ -8916,32 +8919,37 @@ class JetraClient:
 
         import random as _r
         poll = (
-            struct.pack("<I", 0x966E2DBF) +
-            struct.pack("<q", _r.getrandbits(63)) +  # poll id
+            struct.pack("<I", 0x966E2DBF) +                # poll
+            struct.pack("<q", _r.getrandbits(63)) +        # id
             struct.pack("<I", poll_flags) +
             question_obj +
             answers_vec +
-            struct.pack("<q", 0)  # hash
+            struct.pack("<q", 0)                           # hash
         )
 
-        # inputMediaPoll#883a4108 flags:# poll:Poll ...
+        # inputMediaPoll: flags.0 gates correct_answers, which comes after poll
+        media_flags = 0x1 if quiz else 0
         input_media = (
             struct.pack("<I", 0x883A4108) +
-            struct.pack("<I", 0) +  # flags
+            struct.pack("<I", media_flags) +
             poll
         )
+        if quiz:
+            input_media += (
+                struct.pack("<I", VECTOR_CTOR) +
+                struct.pack("<i", len(correct_answers)) +
+                b"".join(struct.pack("<i", int(i)) for i in correct_answers)
+            )
 
-        input_peer = self._get_input_peer(peer_id, peer_type)
-        flags = 0
         import random
-        random_id = random.getrandbits(63)
+        input_peer = self._get_input_peer(peer_id, peer_type)
         body = (
             struct.pack("<I", TL_METHODS["messages.sendMedia"]) +
-            struct.pack("<I", flags) +
+            struct.pack("<I", 0) +
             input_peer +
             input_media +
             self._tl_string("") +
-            struct.pack("<q", random_id)
+            struct.pack("<q", random.getrandbits(63))
         )
         result = await self._send_api_request(body, "messages.sendMedia")
         parsed = parse_sent_message(result)

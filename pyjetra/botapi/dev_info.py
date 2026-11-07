@@ -4,7 +4,7 @@ DEVELOPER_NAME = "Ali VEX"
 DEVELOPER_EMAIL = "lyrdaadhrpyk802@gmail.com"
 JETRA_LINK = "https://jetra.ir/UserBoT"
 GITHUB_URL = "https://github.com/lyrdaadhrpyk802-ux/pyjetra"
-VERSION = "2.0.1"
+VERSION = "2.0.2"
 
 
 def get_info():

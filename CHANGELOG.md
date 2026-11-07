@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.2] - 2026-11-07
+
+### Fixed
+- userapi: `send_poll` rewritten to match the schema: `public_voters` uses the correct flag bit, `option` is length-prefixed TL bytes, quiz mode sends `correct_answers`, and input validation is added (2 to 10 options).
+- Verified against the live server by sending a basic poll and a quiz poll to Saved Messages.
+
+### Known limitations
+- `send_poll` to group chats is not verified. The test account currently gets CHANNEL_INVALID on group 4782, so group access must be checked first.
+- `anonymous=False` (public voters) has not been tested against the live server.
+- `remove_password` returns True but does not remove the password. The request structure is known to be wrong and is not fixed in this release.
+- `send_reaction` returns REACTION_INVALID for all emojis.
+- `create_forum_topic`, `start_bot`, `get_bot_info`, `create_basic_chat`, `get_support`, `get_split_ranges`, `export_contact_token`, `get_saved_contacts`, and `smsjobs.*` are not supported by Jetra.
+- `get_recent_locations` returns CHANNEL_PRIVATE on the tested group.
+- Most `get_*` methods return raw TL bytes rather than parsed objects.
+- Only about 55 of roughly 390 userapi methods were exercised against the live server.
+
 ## [2.0.1] - 2026-11-07
 
 ### Fixed
