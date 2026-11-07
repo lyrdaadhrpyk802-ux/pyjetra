@@ -18,7 +18,7 @@ async def main():
 
     @client.on_ready
     async def on_ready():
-        users = await client.get_users()
+        users = client.db.get_dialogs("user")
 
         print(f"\nYou have {len(users)} users in your dialogs:\n")
         for i, u in enumerate(users, 1):

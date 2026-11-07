@@ -983,23 +983,10 @@ class JetraClient:
     async def get_groups(self):
         return self.db.get_dialogs('group')
 
-    async def get_users(self):
-        return self.db.get_dialogs('user')
 
     def get_history(self, peer_id=None, limit=100):
         return self.db.get_messages(peer_id, limit)
 
-    async def _get_channel_input(self, peer_id):
-        access_hash = 0
-        for d in self.db.get_dialogs():
-            if d['peer_id'] == peer_id:
-                access_hash = d['access_hash'] or 0
-                break
-        return (
-            struct.pack("<I", INPUT_CHANNEL) +
-            struct.pack("<q", peer_id) +
-            struct.pack("<q", access_hash)
-        )
 
     async def _fetch_participants_raw(self, peer_id):
         """
@@ -1008,7 +995,7 @@ class JetraClient:
         """
         if not self._is_running:
             raise JetraError("Client not started.")
-        channel_input = await self._get_channel_input(peer_id)
+        channel_input = self._get_channel_input(peer_id)
 
         body = (
             struct.pack("<I", GET_PARTICIPANTS_ID) +
@@ -1075,7 +1062,7 @@ class JetraClient:
 
     async def get_full_channel(self, peer_id):
         if not self._is_running: raise JetraError("Client not started.")
-        channel_input = await self._get_channel_input(peer_id)
+        channel_input = self._get_channel_input(peer_id)
         
         body = struct.pack("<I", GET_FULL_CHANNEL_ID) + channel_input
         
@@ -1106,7 +1093,7 @@ class JetraClient:
 
     async def leave_channel(self, peer_id):
         if not self._is_running: raise JetraError("Client not started.")
-        channel_input = await self._get_channel_input(peer_id)
+        channel_input = self._get_channel_input(peer_id)
         
         body = struct.pack("<I", LEAVE_CHANNEL_ID) + channel_input
         
@@ -3723,7 +3710,7 @@ class JetraClient:
             struct.pack("<q", ah)
         )
         # id: Vector<InputMessage> = Vector of inputMessage#a54f6b07 (id:int)
-        INPUT_MESSAGE = 0xA54F6B07
+        INPUT_MESSAGE = 0xA676A322  # inputMessageID per schema.py
         items = b"".join(
             struct.pack("<I", INPUT_MESSAGE) + struct.pack("<i", mid)
             for mid in message_ids
@@ -7343,35 +7330,7 @@ class JetraClient:
         )
         return await self._send_api_request(body, "messages.getFullChat")
 
-    async def edit_chat_title(self, chat_id, new_title):
-        """Change basic group title."""
-        if not self._is_running:
-            raise JetraError("Client not started.")
-        body = (
-            struct.pack("<I", TL_METHODS["messages.editChatTitle"]) +
-            struct.pack("<q", chat_id) +
-            self._tl_string(new_title)
-        )
-        return await self._send_api_request(body, "messages.editChatTitle")
 
-    async def edit_chat_photo(self, chat_id, photo_path):
-        """Change basic group photo."""
-        if not self._is_running:
-            raise JetraError("Client not started.")
-        upload = await self.upload_file(photo_path)
-        input_file = upload["input_file"]
-        # inputChatUploadedPhoto
-        input_photo = (
-            struct.pack("<I", 0xBDCD1E79) +
-            struct.pack("<I", 0) +
-            input_file
-        )
-        body = (
-            struct.pack("<I", TL_METHODS["messages.editChatPhoto"]) +
-            struct.pack("<q", chat_id) +
-            input_photo
-        )
-        return await self._send_api_request(body, "messages.editChatPhoto")
 
     async def add_chat_user(self, chat_id, user_id, fwd_limit=0):
         """Add user to a basic group."""
