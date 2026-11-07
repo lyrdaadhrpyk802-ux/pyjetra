@@ -39,5 +39,5 @@ Jetra = "https://jetra.ir/UserBoT"
 include = ["pyjetra*"]
 
 [tool.setuptools.package-data]
-"pyjetra.userapi" = ["*.json", "py.typed"]
+"pyjetra.userapi" = ["py.typed"]
 "pyjetra.botapi" = ["py.typed"]
