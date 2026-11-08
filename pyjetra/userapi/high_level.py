@@ -4948,10 +4948,10 @@ class JetraClient:
         )
 
         if sticker_set_id is None:
-            stickers = struct.pack("<I", 0x0C1E9CC6)  # inputStickerSetEmpty
+            stickers = struct.pack("<I", 0xFFB62B95)  # inputStickerSetEmpty
         else:
             stickers = (
-                struct.pack("<I", 0xFFB62B5E) +  # inputStickerSetID
+                struct.pack("<I", 0x9DE7A269) +  # inputStickerSetID
                 struct.pack("<q", sticker_set_id) +
                 struct.pack("<q", sticker_set_access_hash)
             )
@@ -5196,17 +5196,44 @@ class JetraClient:
         )
         return await self._send_api_request(body, "channels.updateEmojiStatus")
 
-    async def set_main_profile_tab(self, channel_id, tab=0):
+    _PROFILE_TAB_CTORS = {
+        "posts": 0xB98CD696,
+        "files": 0xAB339C00,
+        "gifts": 0x4D4BD46A,
+        "links": 0xD3656499,
+        "media": 0x72C64955,
+        "music": 0x9F27D26E,
+        "voice": 0xE477092E,
+        "gifs":  0xA2C0F695,
+    }
+
+    async def set_main_profile_tab(self, channel_id, tab="posts"):
         """
-        Set main profile tab (0 = posts, 1 = photos, 2 = files, ...).
+        Set main profile tab for a channel/group.
+
+        Args:
+            tab: either a name ("posts", "files", "gifts", "links",
+                 "media", "music", "voice", "gifs") or a ProfileTab
+                 constructor int.
         """
         if not self._is_running:
             raise JetraError("Client not started.")
+        if isinstance(tab, str):
+            key = tab.lower()
+            if key not in self._PROFILE_TAB_CTORS:
+                raise ValueError(
+                    f"Unknown tab: {tab}. Valid: {list(self._PROFILE_TAB_CTORS.keys())}"
+                )
+            tab_ctor = self._PROFILE_TAB_CTORS[key]
+        elif isinstance(tab, int) and not isinstance(tab, bool):
+            tab_ctor = tab
+        else:
+            raise TypeError(f"tab must be str or int, got {type(tab).__name__}")
         channel_input = self._get_channel_input(channel_id)
         body = (
             struct.pack("<I", TL_METHODS["channels.setMainProfileTab"]) +
             channel_input +
-            struct.pack("<i", tab)
+            struct.pack("<I", tab_ctor)
         )
         return await self._send_api_request(body, "channels.setMainProfileTab")
 
@@ -5219,7 +5246,7 @@ class JetraClient:
         items = b""
         for set_id, ah in sticker_set_ids:
             items += (
-                struct.pack("<I", 0xFFB62B5E) +  # inputStickerSetID
+                struct.pack("<I", 0x9DE7A269) +  # inputStickerSetID
                 struct.pack("<q", set_id) +
                 struct.pack("<q", ah)
             )
@@ -5651,7 +5678,7 @@ class JetraClient:
             raise JetraError("Client not started.")
         # inputStickerSetID#ffb62b5e id:long access_hash:long
         input_set = (
-            struct.pack("<I", 0xFFB62B5E) +
+            struct.pack("<I", 0x9DE7A269) +
             struct.pack("<q", set_id) +
             struct.pack("<q", access_hash)
         )
@@ -7222,7 +7249,7 @@ class JetraClient:
         if not self._is_running:
             raise JetraError("Client not started.")
         input_set = (
-            struct.pack("<I", 0xFFB62B5E) +
+            struct.pack("<I", 0x9DE7A269) +
             struct.pack("<q", set_id) +
             struct.pack("<q", access_hash)
         )
@@ -7237,7 +7264,7 @@ class JetraClient:
         if not self._is_running:
             raise JetraError("Client not started.")
         input_set = (
-            struct.pack("<I", 0xFFB62B5E) +
+            struct.pack("<I", 0x9DE7A269) +
             struct.pack("<q", set_id) +
             struct.pack("<q", access_hash)
         )
@@ -7533,7 +7560,7 @@ class JetraClient:
         if not self._is_running:
             raise JetraError("Client not started.")
         input_set = (
-            struct.pack("<I", 0xFFB62B5E) +
+            struct.pack("<I", 0x9DE7A269) +
             struct.pack("<q", set_id) +
             struct.pack("<q", access_hash)
         )
@@ -7549,7 +7576,7 @@ class JetraClient:
         if not self._is_running:
             raise JetraError("Client not started.")
         input_set = (
-            struct.pack("<I", 0xFFB62B5E) +
+            struct.pack("<I", 0x9DE7A269) +
             struct.pack("<q", set_id) +
             struct.pack("<q", access_hash)
         )
@@ -8069,7 +8096,7 @@ class JetraClient:
         if not self._is_running:
             raise JetraError("Client not started.")
         input_set = (
-            struct.pack("<I", 0xFFB62B5E) +
+            struct.pack("<I", 0x9DE7A269) +
             struct.pack("<q", set_id) +
             struct.pack("<q", set_ah)
         )
@@ -8150,7 +8177,7 @@ class JetraClient:
         if not self._is_running:
             raise JetraError("Client not started.")
         input_set = (
-            struct.pack("<I", 0xFFB62B5E) +
+            struct.pack("<I", 0x9DE7A269) +
             struct.pack("<q", set_id) +
             struct.pack("<q", set_ah)
         )
