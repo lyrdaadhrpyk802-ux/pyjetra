@@ -3770,9 +3770,9 @@ class JetraClient:
             "phone_number":     0x0352DAFA,       # who can see my phone
             "profile_photo":    0x5719BACC,       # who can see profile photo
             "phone_call":       0xFABADC5F,       # who can call me
-            "phone_p2p":        0xB2DDBEB7,       # P2P calls
-            "forwards":         0x69EC56A3,       # who can forward my messages
-            "birthday":         0xF6F7E2CB,       # who can see birthday
+            "phone_p2p":        0xDB9E70D2,       # P2P calls
+            "forwards":         0xA4DD4C08,       # who can forward my messages
+            "birthday":         0xD65A11CC,       # who can see birthday
         }
         if key_name not in keys:
             raise ValueError(f"Unknown privacy key: {key_name}. Valid: {list(keys.keys())}")
