@@ -1,12 +1,40 @@
+# Python
 __pycache__/
-*.pyc
-*.egg-info/
+*.py[cod]
+*$py.class
+*.so
+
+# Build artifacts
 build/
 dist/
+*.egg-info/
+*.egg
+
+# Virtual envs
 .env
 .venv/
 venv/
+env/
+
+# Test & cache
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+
+# Runtime data (sessions, db, logs) - never commit
 data/
 *.db
 *session*.json
 .pyjetra/
+
+# Logs
+*.log
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

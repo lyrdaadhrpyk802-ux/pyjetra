@@ -1,3 +1,19 @@
+
+Changelog
+[2.0.7] - 2026-11-08
+Changed
+Bump version to 2.0.7 across pyproject.toml, pyjetra/init.py, pyjetra/botapi/init.py, pyjetra/botapi/dev_info.py, and pyjetra/userapi/init.py.
+Fixed
+Remove stray empty file pyjetra/botapi/typed.py (only py.typed is needed for PEP 561).
+Expand .gitignore to cover .pytest_cache/, .mypy_cache/, .ruff_cache/, *.log, editor and OS files.
+Move live-token test scripts (test_sync.py, test_async.py, test_advanced_buttons.py, test_registration_fsm.py, test_error_handling.py) from tests/botapi/ to examples_live/ so they are no longer collected by pytest.
+Fix misleading comment on inputChatUploadedPhoto ctor id in edit_chat_photo (Jetra uses 0xBDCDAEC0, not the standard Telegram 0xBDCD1E79).
+publish.sh now uses --skip-existing so re-uploading the same version does not fail.
+[2.0.2] - 2026-11-07
+Fixed
+botapi, userapi: __version__ was stuck at the pre-merge value; both now match the package version 2.0.2.
+userapi: send_poll rewritten to match the schema: public_voters uses the correct flag bit, option is length-prefixed TL bytes, quiz mode sends correct_answers, and input validation is added (2 to 10 options).
+Verified against the live server by sending a basic poll and a quiz poll to Saved Messages.
 # Changelog
 
 ## [2.0.2] - 2026-11-07

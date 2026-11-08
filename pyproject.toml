@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyjetra"
-version = "2.0.2"
+version = "2.0.7"
 description = "Python toolkit for Jetra Messenger: Bot API (sync/async) and User Account API."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -3401,7 +3401,8 @@ class JetraClient:
         input_file = upload_info["input_file"]
 
         # Build inputChatUploadedPhoto
-        # inputChatUploadedPhoto#bdcd1e79 flags:# file:InputFile
+        # Jetra uses its own ctor id 0xBDCDAEC0 (NOT the standard Telegram
+        # id 0xBDCD1E79). Verified against schema.json.
         input_photo = (
             struct.pack("<I", 0xBDCDAEC0) +
             struct.pack("<I", 0) +

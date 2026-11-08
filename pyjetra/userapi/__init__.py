@@ -11,8 +11,8 @@ from .exceptions import (
 )
 
 __all__ = [
-    "JetraClient", 
-    "Message", 
+    "JetraClient",
+    "Message",
     "MessageEntity",
     "JetraSession",
     "format",
@@ -22,5 +22,5 @@ __all__ = [
     "JetraRPCError",
     "JetraAuthError"
 ]
-__version__ = "2.0.2"
+__version__ = "2.0.7"
 __author__ = "Ali VEX"

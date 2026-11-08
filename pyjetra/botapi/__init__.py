@@ -1,6 +1,6 @@
 # [EN] PyJetra - package entry point.
 
-__version__ = "2.0.2"
+__version__ = "2.0.7"
 
 from .banner import print_banner
 from .client import JetraBot
