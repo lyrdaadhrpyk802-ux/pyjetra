@@ -37,18 +37,17 @@ CHECK_USERNAME_ID = 0x2714D86C
 GET_FULL_USER_ID = 0xB60F5918
 GET_USERS_ID = 0x0D91A548
 GET_CONTACTS_ID = 0xC4A353EE
-RESOLVE_USERNAME_ID = 0xF93CD45C
 GET_HISTORY_ID = 0x4423E6C5
 GET_CONFIG_ID = 0xC4F9186B
 GET_NEAREST_DC_ID = 0x1FB33026
 
 # --- InputUser constructors ---
-INPUT_USER = 0xD8292816
+INPUT_USER = 0xF21158C6
 INPUT_USER_SELF = 0xF7C1B13F
 
 # --- SendMessageAction constructors ---
 ACTION_TYPING = 0x16BF744E
-ACTION_CANCEL = 0xE7C6B8D3
+ACTION_CANCEL = 0xFD5EC8F5
 
 # --- Additional TL methods (batch 2, confirmed to exist) ---
 GET_MESSAGES_ID = 0x63C66506
@@ -60,7 +59,7 @@ GET_AUTHORIZATIONS_ID = 0xE320C158
 RESET_AUTHORIZATION_ID = 0xDF77F3BC
 GET_USER_PHOTOS_ID = 0x91CD32A8
 GET_EMOJI_KEYWORDS_ID = 0x35A0E062
-UPLOAD_MEDIA_ID = 0x519BC2B1
+UPLOAD_MEDIA_ID = 0x14967978
 
 # --- InputChannel / InputUserEmpty ---
 INPUT_PEER_USER = 0xDDE8A54C  # re-declared for safety
@@ -80,7 +79,8 @@ GET_STATE_ID = 0xEDD4882A
 GET_PARTICIPANTS_ID = 0x77CED9D0
 GET_FULL_CHANNEL_ID = 0x08736A09
 LEAVE_CHANNEL_ID = 0xF836AA95
-CONTACTS_SEARCH_ID = 0x11F812D8
+CONTACTS_SEARCH_ID = 0x05F58D0F
+RESOLVE_USERNAME_ID = 0x725AFBBC
 
 RPC_ERROR = 0x2144CA19
 GZIP_PACKED = 0x3072CFA1
@@ -1114,19 +1114,19 @@ class JetraClient:
             raise ValueError("Username cannot be empty")
 
         body = (
-            struct.pack("<I", CONTACTS_SEARCH_ID) +
-            self._tl_string(clean_username) +
-            struct.pack("<i", 10)
+            struct.pack("<I", RESOLVE_USERNAME_ID) +
+            struct.pack("<I", 0) +
+            self._tl_string(clean_username)
         )
-        
+
         result = await self.client.send_request(wrap_init_connection(body))
         if not result:
-            raise JetraConnectionError("No response from contacts.search")
-            
+            raise JetraConnectionError("No response from contacts.resolveUsername")
+
         result = self._unwrap_gzip(result)
         resp_ctor = struct.unpack("<I", result[:4])[0]
         if resp_ctor == RPC_ERROR:
-            raise JetraRPCError(f"Server error: {self._parse_rpc_error(result)}", method="contacts.search")
+            raise JetraRPCError(f"Server error: {self._parse_rpc_error(result)}", method="contacts.resolveUsername")
             
         PEER_USER = 0x59511722
         PEER_CHANNEL = 0xA2A5371E
@@ -1489,7 +1489,7 @@ class JetraClient:
 
         # messages.getMessages requires Vector<InputMessage>,
         # not Vector<int>. Wrap each id in InputMessage#a54f6b07.
-        INPUT_MESSAGE_ID = 0xA54F6B07
+        INPUT_MESSAGE_ID = 0xA676A322
         items = b"".join(
             struct.pack("<I", INPUT_MESSAGE_ID) + struct.pack("<i", mid)
             for mid in message_ids
@@ -3403,7 +3403,7 @@ class JetraClient:
         # Build inputChatUploadedPhoto
         # inputChatUploadedPhoto#bdcd1e79 flags:# file:InputFile
         input_photo = (
-            struct.pack("<I", 0xBDCD1E79) +
+            struct.pack("<I", 0xBDCDAEC0) +
             struct.pack("<I", 0) +
             input_file
         )
@@ -3793,8 +3793,8 @@ class JetraClient:
             "allow_all":         0x184B35CE,
             "allow_contacts":    0x0D09E07B,
             "disallow_all":      0xD66B66C9,
-            "allow_close_friends": 0xEC3B12DE,
-            "allow_premium":     0xCA4DAED5,
+            "allow_close_friends": 0x2F453E49,
+            "allow_premium":     0x77CDC9F1,
         }
         if not isinstance(rules, list):
             rules = [rules]
@@ -4310,15 +4310,15 @@ class JetraClient:
         )
         return await self._send_api_request(body, "account.toggleUsername")
 
-    async def report_peer(self, peer_id, reason_ctor=0xAAB4CFA0, message="",
+    async def report_peer(self, peer_id, reason_ctor=0x58DBCAB8, message="",
                           peer_type=None):
         """
         Report a peer.
 
         Args:
-            reason_ctor: 0xAAB4CFA0 (spam), 0x3DB051BE (violence),
-                         0x1A8B17AB (pornography), 0x58E36D13 (child abuse),
-                         0xEEB2B30E (copyright), 0xFA01F2B4 (other)
+            reason_ctor: 0x58DBCAB8 (spam), 0x1E22C78D (violence),
+                         0x2E59D922 (pornography), 0xADF44EE3 (child abuse),
+                         0x9B89F93A (copyright), 0xC1E4A2B1 (other)
             message:     optional description
         """
         if not self._is_running:
@@ -4334,7 +4334,7 @@ class JetraClient:
         return await self._send_api_request(body, "account.reportPeer")
 
     async def report_profile_photo(self, peer_id, photo_id, access_hash,
-                                    file_reference=b"", reason_ctor=0xAAB4CFA0,
+                                    file_reference=b"", reason_ctor=0x58DBCAB8,
                                     message="", peer_type=None):
         """Report a profile photo of a peer."""
         if not self._is_running:
@@ -5164,7 +5164,7 @@ class JetraClient:
             flags |= 0x2
             extra += struct.pack("<q", background_emoji_id)
         peer_color = (
-            struct.pack("<I", 0xB54BACCD) +
+            struct.pack("<I", 0xB54B5ACF) +
             struct.pack("<I", flags) +
             extra
         )
@@ -6119,7 +6119,7 @@ class JetraClient:
     def _build_input_chatlist(self, folder_id):
         """inputChatlistDialogFilter#f0e5b0a4 filter_id:int"""
         return (
-            struct.pack("<I", 0xF0E5B0A4) +
+            struct.pack("<I", 0xF3E0DA33) +
             struct.pack("<i", folder_id)
         )
 
@@ -7176,7 +7176,7 @@ class JetraClient:
             raise JetraError("Client not started.")
         # inputAiComposeTone#... id:long access_hash:long
         tone = (
-            struct.pack("<I", 0xF7A71E30) +
+            struct.pack("<I", 0x0773C080) +
             struct.pack("<q", tone_id) +
             struct.pack("<q", access_hash)
         )
@@ -7191,7 +7191,7 @@ class JetraClient:
         if not self._is_running:
             raise JetraError("Client not started.")
         tone = (
-            struct.pack("<I", 0xF7A71E30) +
+            struct.pack("<I", 0x0773C080) +
             struct.pack("<q", tone_id) +
             struct.pack("<q", access_hash)
         )
@@ -8069,7 +8069,7 @@ class JetraClient:
             # inputStickerSetItem#3282a1a flags:#
             #   document:InputDocument emoji:string mask_coords:flags.0?MaskCoords
             items += (
-                struct.pack("<I", 0x0328A21A) +
+                struct.pack("<I", 0x32DA9E9C) +
                 struct.pack("<I", 0) +
                 input_doc +
                 self._tl_string(emoji)
@@ -8107,7 +8107,7 @@ class JetraClient:
             self._tl_bytes(file_ref)
         )
         sticker_item = (
-            struct.pack("<I", 0x0328A21A) +
+            struct.pack("<I", 0x32DA9E9C) +
             struct.pack("<I", 0) +
             input_doc +
             self._tl_string(emoji)
@@ -8160,7 +8160,7 @@ class JetraClient:
             self._tl_bytes(new_file_ref)
         )
         new_item = (
-            struct.pack("<I", 0x0328A21A) +
+            struct.pack("<I", 0x32DA9E9C) +
             struct.pack("<I", 0) +
             new_doc +
             self._tl_string(emoji)
@@ -8791,12 +8791,12 @@ class JetraClient:
             "recent": 0xDE3F3C79,
             "admin": 0xB4608969,
             "kicked": 0xA3B54985,
-            "banned": 0xBB6AE88D,
+            "banned": 0x1427A5E1,
             "bots": 0xB0D1865B,
-            "contacts": 0xAB1F2D1B,
+            "contacts": 0xBB6AE88D,
             "non_contacts": 0x2BA7D2FD,
-            "mentions": 0x96137A6E,
-            "search": 0xF0176E0E,
+            "mentions": 0xE04B5CEB,
+            "search": 0x0656AC4B,
         }
         if filter_type not in filters:
             raise ValueError(f"Unknown filter: {filter_type}. Valid: {list(filters.keys())}")
@@ -9747,7 +9747,7 @@ class JetraClient:
         Args:
             bot_id: bot user id.
             scope_ctor: botCommandScopeDefault (0x2F6CB2AB) or
-                        botCommandScopePeer (0x54404712)
+                        botCommandScopePeer (0xDB9D897D)
             lang_code: language code (empty = default).
         """
         if not self._is_running:
