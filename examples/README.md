@@ -1,10 +1,28 @@
-# JetraUserAPI Examples
+# نمونه‌های pyjetra
 
-Short, ready-to-run examples for the JetraUserAPI library.
+این پوشه شامل مثال‌های عملی برای یادگیری pyjetra است. هر فایل مستقل و قابل اجراست.
 
-## Prerequisites
+## ساختار
 
-You must be logged in first:
+| پوشه | توضیح |
+|------|-------|
+| `01_bot_basics/` | ربات ساده: echo، کامند، کیبورد اینلاین |
+| `02_bot_intermediate/` | FSM، callback query، webhook |
+| `03_bot_advanced/` | آپلود مدیا، مدیریت چت، مدیریت خطا |
+| `04_user_basics/` | لاگین اکانت کاربری، send_message، listen |
+| `05_user_intermediate/` | dialogs، participants، مدیا |
+| `06_user_advanced/` | ادمین کانال، دعوت‌نامه، حریم خصوصی، استوری، 2FA |
+| `99_recipes/` | ترکیب‌های آماده: پاسخگوی خودکار، نگهبان گروه، ارسال زمان‌بندی شده |
 
-```bash
-python login.py
+## نحوه‌ی اجرا
+
+1. پکیج را نصب کنید: `pip install -e .` (یا `pip install 'pyjetra[all]'`)
+2. توکن ربات را در متغیر محیطی بگذارید: `export JETRA_BOT_TOKEN="your_token"`
+3. فایل مثال را اجرا کنید: `python examples/01_bot_basics/01_echo_bot.py`
+
+## قراردادها
+
+- همه‌ی کامندها هم فارسی هم انگلیسی دارند (مثلاً `/start` و `/شروع`).
+- کد و کامنت انگلیسی، فقط پیام‌های نمایشی فارسی هستند.
+- هر فایل با `ast.parse` قابل بررسی است.
+- هیچ ایموجی در کد نیست.
