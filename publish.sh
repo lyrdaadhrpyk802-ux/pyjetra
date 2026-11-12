@@ -10,7 +10,7 @@ set -e
 PROJECT_DIR="/storage/emulated/0/pyjetra-merged"
 cd "$PROJECT_DIR"
 
-VERSION="2.0.7"
+VERSION="2.0.9"
 
 echo "=========================================="
 echo "  pyjetra v${VERSION} - publish pipeline"

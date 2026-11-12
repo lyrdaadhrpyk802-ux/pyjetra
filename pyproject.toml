@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyjetra"
-version = "2.0.8"
+version = "2.0.9"
 description = "Python toolkit for Jetra Messenger: Bot API (sync/async) and User Account API."
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "Ali VEX", email = "lyrdaadhrpyk802@gmail.com"}]
 keywords = ["jetra", "messenger", "bot", "userbot", "api"]
 classifiers = [
@@ -16,7 +17,6 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

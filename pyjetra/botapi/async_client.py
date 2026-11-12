@@ -1,6 +1,7 @@
 # [EN] PyJetra - Asynchronous client for the Jetra Bot API.
 
 import asyncio
+import inspect
 import os
 from typing import Any, Callable, List, Optional
 
@@ -757,7 +758,7 @@ class AsyncJetraBot:
             msg = Message(update["message"], self)
             for handler in self._message_handlers:
                 if all(f(msg) for f in handler["filters"]):
-                    if asyncio.iscoroutinefunction(handler["func"]):
+                    if inspect.iscoroutinefunction(handler["func"]):
                         await handler["func"](msg)
                     else:
                         handler["func"](msg)
@@ -765,28 +766,28 @@ class AsyncJetraBot:
             msg = Message(update["edited_message"], self)
             for handler in self._edited_message_handlers:
                 if all(f(msg) for f in handler["filters"]):
-                    if asyncio.iscoroutinefunction(handler["func"]):
+                    if inspect.iscoroutinefunction(handler["func"]):
                         await handler["func"](msg)
                     else:
                         handler["func"](msg)
         elif "callback_query" in update:
             cb = CallbackQuery(update["callback_query"], self)
             for handler in self._callback_handlers:
-                if asyncio.iscoroutinefunction(handler):
+                if inspect.iscoroutinefunction(handler):
                     await handler(cb)
                 else:
                     handler(cb)
         elif "chat_member" in update:
             event = ChatMemberUpdated(update["chat_member"], self)
             for handler in self._chat_member_handlers:
-                if asyncio.iscoroutinefunction(handler):
+                if inspect.iscoroutinefunction(handler):
                     await handler(event)
                 else:
                     handler(event)
         elif "my_chat_member" in update:
             event = ChatMemberUpdated(update["my_chat_member"], self)
             for handler in self._my_chat_member_handlers:
-                if asyncio.iscoroutinefunction(handler):
+                if inspect.iscoroutinefunction(handler):
                     await handler(event)
                 else:
                     handler(event)

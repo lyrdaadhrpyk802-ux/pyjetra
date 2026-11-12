@@ -1,5 +1,19 @@
 
 
+[2.0.9] - 2026-11-12
+Changed
+- Bump version to 2.0.9.
+- pyproject.toml: switch license to SPDX expression ("MIT") and add license-files.
+- pyproject.toml: remove deprecated "License :: OSI Approved :: MIT License" classifier.
+- botapi/async_client.py: replace asyncio.iscoroutinefunction with inspect.iscoroutinefunction.
+- userapi/high_level.py: replace asyncio.iscoroutinefunction with inspect.iscoroutinefunction.
+Fixed
+- Eliminates DeprecationWarning on Python 3.14+ (asyncio.iscoroutinefunction is removed in 3.16).
+- Removes setuptools build warnings about deprecated license format (deadline: 2027-02-18).
+Notes
+- No public API changes. All 93 tests still pass.
+
+
 [2.0.8] - 2026-11-12
 Changed
 - Bump version to 2.0.8.

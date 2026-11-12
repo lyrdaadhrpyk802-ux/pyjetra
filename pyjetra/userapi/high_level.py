@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 import struct
 import gzip
 import hashlib
@@ -177,7 +178,7 @@ class JetraClient:
                     continue
                 if predicate is not None and not predicate(message):
                     continue
-                if asyncio.iscoroutinefunction(handler):
+                if inspect.iscoroutinefunction(handler):
                     await handler(message)
                 else:
                     handler(message)
@@ -187,7 +188,7 @@ class JetraClient:
     async def _trigger_ready_handlers(self):
         for handler in self._ready_handlers:
             try:
-                if asyncio.iscoroutinefunction(handler):
+                if inspect.iscoroutinefunction(handler):
                     await handler()
                 else:
                     handler()
