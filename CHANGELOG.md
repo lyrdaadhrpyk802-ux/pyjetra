@@ -1,4 +1,21 @@
 
+
+[2.0.8] - 2026-11-12
+Changed
+- Bump version to 2.0.8.
+Added
+- Restructured examples/ into 7 folders (01_bot_basics, 02_bot_intermediate, 03_bot_advanced, 04_user_basics, 05_user_intermediate, 06_user_advanced, 99_recipes).
+- 21 new example scripts covering bot API, user API, and recipes.
+- All examples support Persian and English command names.
+- docs/CONCEPTS.md: explains TL serialization, access_hash, peer_type, FSM, session file.
+- CONTRIBUTING.md: code style, file headers, workflow, release process.
+- examples/README.md: run instructions and folder map.
+- examples/legacy/README.md: marker for the old example files.
+- scripts/ folder: login.py, jetra_login.py, jetra_fix_uid.py (moved from project root).
+- README.md updated with examples section and scripts reference.
+Notes
+- No changes to the pyjetra package API. Only examples, docs, and project layout.
+
 Changelog
 [2.0.7] - 2026-11-08
 Changed
